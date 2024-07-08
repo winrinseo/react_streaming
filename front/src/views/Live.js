@@ -54,7 +54,9 @@ import {
             </Row>
             <Row>
                 <Col sm={9}>  
-                    <Video id={streamKey} activeStream={activeStream}/>    
+                    {
+                        activeStream ? <Video id={streamKey} activeStream={activeStream}/> : <p>방송이 종료되었습니다.</p>
+                    }
                 </Col>
                 <Col sm={3}>
                     <div style={{backgroundColor:"skyblue"}}>

@@ -2,18 +2,18 @@ import { useEffect, useRef, useState } from "react";
 import { debounce } from 'lodash';
 import Ratio from "react-ratio"
 
-import flvjs from 'flv.js';
+import Hls from "hls.js";
 
 
 
 
   function Video(props){
     
-    var videoSrc = `http://localhost:8000/live/${props.id}.flv`;
+    var videoSrc = `http://localhost:8000/live/${props.id}/index.m3u8`;
 
     var videoParentRef = useRef();
     var videoRef = useRef();
-    var flvPlayerRef = useRef();
+    var hlsPlayerRef = useRef();
 
     const updateSize = debounce(() => {
         videoRef.current.width = videoParentRef.current?.offsetWidth
@@ -32,41 +32,78 @@ import flvjs from 'flv.js';
         }
       }, []);
 
-      useEffect(() => {
-        if (flvjs.isSupported()) {
-          const flvPlayer = flvjs.createPlayer({
-            type: 'flv',
-            url: videoSrc
-          });
-          flvPlayerRef.current = flvPlayer;
-          flvPlayer.attachMediaElement(videoRef.current);
-          flvPlayer.load();
-          videoRef.current.muted = true;
+    //   useEffect(() => {
+    //     if (flvjs.isSupported()) {
+    //       const flvPlayer = flvjs.createPlayer({
+    //         type: 'flv',
+    //         url: videoSrc
+    //       });
+    //       flvPlayerRef.current = flvPlayer;
+    //       flvPlayer.attachMediaElement(videoRef.current);
+    //       flvPlayer.load();
+    //       videoRef.current.muted = true;
 
-          flvPlayer.on(flvjs.Events.LOADED_METADATA, () => {
-            flvPlayer.play().catch(error => {
-              console.error('Error attempting to play', error);
-            });
-          });
+    //       flvPlayer.on(flvjs.Events.LOADED_METADATA, () => {
+    //         flvPlayer.play().catch(error => {
+    //           console.error('Error attempting to play', error);
+    //         });
+    //       });
 
-          flvPlayer.on(flvjs.Events.ERROR, (errorType, errorDetail) => {
-            console.error('FLV.js error:', errorType, errorDetail);
-            // setError('Stream not available');
-          });
+    //       flvPlayer.on(flvjs.Events.ERROR, (errorType, errorDetail) => {
+    //         console.error('FLV.js error:', errorType, errorDetail);
+    //         // setError('Stream not available');
+    //       });
 
-        }
-        return () => {
-            if (flvPlayerRef.current) {
-              flvPlayerRef.current.destroy();
+    //     }
+    //     return () => {
+    //         if (flvPlayerRef.current) {
+    //           flvPlayerRef.current.destroy();
+    //         }
+    //     };
+    //   }, [props.activeStream]);
+
+    useEffect(() => {
+        if (Hls.isSupported()) {
+          const hls = new Hls();
+
+          hls.on(Hls.Events.ERROR,  (event, data) =>{
+            console.log("error : " , data.details)
+            switch (data.details) {
+                //영상을 가지고 오는것에 실패한 경우
+              case Hls.ErrorDetails.MANIFEST_LOAD_ERROR:
+                    //일정 시간 후에 다시 로드한다
+                    // media server에서 영상을 만들 시간이 필요함
+                    setTimeout(()=>{
+                        hls.loadSource(videoSrc);
+                    } , 2000);
+                break;
+              default:
+                break;
             }
-        };
-      }, [props.activeStream]);
+          });
+
+          hlsPlayerRef.current = hls;
+          hls.loadSource(videoSrc);
+          hls.attachMedia(videoRef.current);
+
+          hls.on(Hls.Events.MANIFEST_PARSED, () => {
+            videoRef.current.play();
+          });
+        }
+        //레퍼런스가 이미 있다면 종료해준다
+        return () => {
+            if(hlsPlayerRef.current){
+                hlsPlayerRef.current.destroy();
+                hlsPlayerRef.current = null;
+            };
+        }
+      }, []);
 
     return(
         <>
             <div ref={videoParentRef} style={{backgroundColor:"blue"}} >
                 <Ratio ratio = { 16/9 }>
-                    <video ref={videoRef} controls muted autoPlay/>  
+                    <video ref={videoRef} controls muted autoPlay/>
                 </Ratio>
             </div>
                       

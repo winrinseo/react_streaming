@@ -10,6 +10,8 @@ import Footer from "components/Footer/Footer.js";
 import Sidebar from "components/Sidebar/Sidebar.js";
 import FixedPlugin from "components/FixedPlugin/FixedPlugin.js";
 
+import Main from 'views/Main';
+
 import routes from "routes.js";
 
 var ps;
@@ -51,8 +53,8 @@ function App() {
       <div className="main-panel" ref={mainPanel}>
         <DemoNavbar/>
         <Routes>
-          <Route path='/' element={routes[0].component}/>
-          
+          <Route path='/' element={<Main/>}/>
+
           {routes.map((prop, key) => {
             return (
               <Route

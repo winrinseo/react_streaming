@@ -2,6 +2,9 @@ const NodeMediaServer = require('node-media-server');
 const express = require('express');
 const app = express();
 
+const path = require('path');
+const fs = require('fs');
+
 const appPort = 8888
 
 const config = {
@@ -14,21 +17,21 @@ const config = {
   },
   http: {
     port: 8000,
-   
+    mediaroot: './media',
     allow_origin: '*'
   },
-//   trans: {
-//     ffmpeg: '/usr/bin/ffmpeg', // FFmpeg 경로 설정
-//     tasks: [
-//       {
-//         app: 'live',
-//         hls: true,
-//         hlsFlags: '[hls_time=2:hls_list_size=3:hls_flags=delete_segments]',
-//         dash: true,
-//         dashFlags: '[f=dash:window_size=3:extra_window_size=5]'
-//       }
-//     ]
-//   }
+  trans: {
+    ffmpeg: path.join(__dirname, 'ffmpeg/bin/ffmpeg.exe'), // FFmpeg 경로 설정
+    tasks: [
+      {
+        app: 'live',
+        hls: true,
+        hlsFlags: '[hls_time=2:hls_list_size=3:hls_flags=delete_segments]',
+        dash: true,
+        dashFlags: '[f=dash:window_size=3:extra_window_size=5]'
+      }
+    ]
+  }
 };
 
 var nms = new NodeMediaServer(config);
@@ -48,6 +51,8 @@ nms.on('donePublish', (id, StreamPath, args) => {
 
 
 nms.run();
+
+console.log("ffmpeg 경로 : " , path.join(__dirname, 'ffmpeg/bin/ffmpeg'))
 
 app.get('/api/check-stream', (req, res) => {
     const streamKey = req.query.streamKey;
