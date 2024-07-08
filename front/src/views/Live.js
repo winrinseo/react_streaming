@@ -13,11 +13,13 @@ import {
     Row,
     Col,
   } from "reactstrap";
+import { useParams } from "react-router-dom";
 
 
   function Live(){
-    
-    var streamKey = 'mystream';
+    // var streamKey = 'mystream';
+    var streamKey = useParams().id
+    console.log(streamKey)
     var [activeStream , setActiveStream] = useState(false);
 
 
@@ -25,7 +27,6 @@ import {
         try {
           const response = await fetch(`http://localhost:8888/api/check-stream?streamKey=${streamKey}`);
           const data = await response.json();
-          console.log(data)
           setActiveStream(data['exists']);
         } catch (error) {
           console.error('Error checking stream existence:', error);

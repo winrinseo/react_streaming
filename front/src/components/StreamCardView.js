@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import {
     Card,
     CardHeader,
@@ -9,17 +10,28 @@ import {
     Button
   } from "reactstrap";
 
+
+
 function StreamCardView(props){
+    const navigate = useNavigate();
+    const goToLive = () => {
+        navigate(`/live/${props.id}`)
+    }
     return (
         <>
-        <Card style={{ width: '18rem' }}>
+        <Card style={{ width: '18rem' }} onClick={()=>goToLive()}>
             <CardImg variant="top" src="holder.js/100px180" />
             <CardBody>
-                <CardTitle>방송제목</CardTitle>
+                <CardTitle>{props.title}</CardTitle>
                 <CardText>
-                    이름
+                    {props.name}
                 </CardText>
-                <Button size='sm' variant="primary">tag</Button>
+                {
+                    props.tag.map( (data , i) => (
+                        <Button size='sm' variant="primary" key={i}>{data}</Button>
+                    ))
+                }
+                
             </CardBody>
         </Card>
         </>

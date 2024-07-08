@@ -32,39 +32,11 @@ import Hls from "hls.js";
         }
       }, []);
 
-    //   useEffect(() => {
-    //     if (flvjs.isSupported()) {
-    //       const flvPlayer = flvjs.createPlayer({
-    //         type: 'flv',
-    //         url: videoSrc
-    //       });
-    //       flvPlayerRef.current = flvPlayer;
-    //       flvPlayer.attachMediaElement(videoRef.current);
-    //       flvPlayer.load();
-    //       videoRef.current.muted = true;
-
-    //       flvPlayer.on(flvjs.Events.LOADED_METADATA, () => {
-    //         flvPlayer.play().catch(error => {
-    //           console.error('Error attempting to play', error);
-    //         });
-    //       });
-
-    //       flvPlayer.on(flvjs.Events.ERROR, (errorType, errorDetail) => {
-    //         console.error('FLV.js error:', errorType, errorDetail);
-    //         // setError('Stream not available');
-    //       });
-
-    //     }
-    //     return () => {
-    //         if (flvPlayerRef.current) {
-    //           flvPlayerRef.current.destroy();
-    //         }
-    //     };
-    //   }, [props.activeStream]);
-
     useEffect(() => {
         if (Hls.isSupported()) {
+            // 가장 최근의 영상 세그먼트부터 재생한다
           const hls = new Hls();
+          
 
           hls.on(Hls.Events.ERROR,  (event, data) =>{
             console.log("error : " , data.details)
@@ -83,12 +55,18 @@ import Hls from "hls.js";
           });
 
           hlsPlayerRef.current = hls;
+          
           hls.loadSource(videoSrc);
           hls.attachMedia(videoRef.current);
 
           hls.on(Hls.Events.MANIFEST_PARSED, () => {
+            const lastSegmentIndex = hls.levels[0].details.fragments.length - 1;
+            // 가장 마지막 세그먼트를 재생한다.
+            videoRef.current.currentTime = hls.levels[0].details.fragments[lastSegmentIndex].start;
             videoRef.current.play();
           });
+          
+          //videoRef.current.muted = false;
         }
         //레퍼런스가 이미 있다면 종료해준다
         return () => {

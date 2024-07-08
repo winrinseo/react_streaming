@@ -70,7 +70,7 @@ var routes = [
     component: <Typography />,
   },
   {
-    path: "/live",
+    path: "/live/:id",
     name: "Live",
     icon: "nc-icon nc-caps-small",
     component: <Live />,
