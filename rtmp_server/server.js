@@ -38,6 +38,7 @@ var nms = new NodeMediaServer(config);
 
 const activeStreams = new Map();
 
+//media server event listner
 nms.on('postPublish', (id, StreamPath, args) => {
     //stream
     activeStreams.set(StreamPath , 0);
@@ -54,12 +55,14 @@ nms.run();
 
 console.log("ffmpeg 경로 : " , path.join(__dirname, 'ffmpeg/bin/ffmpeg'))
 
+
+//대충 api server
 app.get('/api/check-stream', (req, res) => {
     const streamKey = req.query.streamKey;
     const streamExists = activeStreams.has('/live/' + streamKey)
     res.json({ exists: streamExists });
   });
 
-  app.listen(appPort, () => {
+app.listen(appPort, () => {
     console.log(`Express server is running on port ${appPort}`);
   });

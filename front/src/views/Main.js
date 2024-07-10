@@ -13,13 +13,13 @@ import StreamCardView from "components/StreamCardView";
 
 const streamData = [
     {
-        id: 'mystream',
+        id: 'tjdnfls1234',
         title: '방송 시작',
         name: '서우린',
         tag : ['game' , 'chat']
     },
     {
-        id: 'mystream',
+        id: 'tjdnfls1234',
         title: '우잉',
         name: '우웅',
         tag : ['game' , 'chat']

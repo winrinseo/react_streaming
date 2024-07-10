@@ -9,7 +9,7 @@ import Hls from "hls.js";
 
   function Video(props){
     
-    var videoSrc = `http://localhost:8000/live/${props.id}/index.m3u8`;
+    var videoSrc = `http://localhost:4000/live/${props.id}/index.m3u8`;
 
     var videoParentRef = useRef();
     var videoRef = useRef();
@@ -34,7 +34,6 @@ import Hls from "hls.js";
 
     useEffect(() => {
         if (Hls.isSupported()) {
-            // 가장 최근의 영상 세그먼트부터 재생한다
           const hls = new Hls();
           
 
@@ -55,7 +54,7 @@ import Hls from "hls.js";
           });
 
           hlsPlayerRef.current = hls;
-          
+
           hls.loadSource(videoSrc);
           hls.attachMedia(videoRef.current);
 
@@ -66,7 +65,7 @@ import Hls from "hls.js";
             videoRef.current.play();
           });
           
-          //videoRef.current.muted = false;
+          videoRef.current.muted = false;
         }
         //레퍼런스가 이미 있다면 종료해준다
         return () => {

@@ -1,3 +1,4 @@
+/* eslint-disable */
 import logo from './logo.svg';
 import './App.css';
 import React from "react";
@@ -19,6 +20,7 @@ var ps;
 function App() {
   const [backgroundColor, setBackgroundColor] = React.useState("black");
   const [activeColor, setActiveColor] = React.useState("info");
+  const [pageName , setPageName] = React.useState('Main')
   const mainPanel = React.useRef();
   const location = useLocation();
   React.useEffect(() => {
@@ -36,6 +38,14 @@ function App() {
   React.useEffect(() => {
     mainPanel.current.scrollTop = 0;
     document.scrollingElement.scrollTop = 0;
+    //위치 변경 감지
+    let path = location.pathname.split('/');
+    
+    if(path[1] !== ''){
+      setPageName(path[1].toUpperCase())
+    }else{
+      setPageName('MAIN')
+    }
   }, [location]);
   const handleActiveClick = (color) => {
     setActiveColor(color);
@@ -51,7 +61,7 @@ function App() {
         activeColor={activeColor}
       />
       <div className="main-panel" ref={mainPanel}>
-        <DemoNavbar/>
+        <DemoNavbar pageName = {pageName}/>
         <Routes>
           <Route path='/' element={<Main/>}/>
 
